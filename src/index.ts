@@ -1,5 +1,6 @@
 import * as core from '@actions/core'
-import { wait } from './wait'
+import * as github from '@actions/github'
+import { hide } from './hide'
 
 /**
  * The main function for the action.
@@ -7,21 +8,28 @@ import { wait } from './wait'
  */
 export async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
+    const author: string | undefined =
+      core.getInput('author') === '' ? undefined : core.getInput('author')
 
-    // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    core.debug(`Waiting ${ms} milliseconds ...`)
+    const issueNumber: number =
+      core.getInput('number') === ''
+        ? github.context.issue.number
+        : parseInt(core.getInput('number'))
 
-    // Log the current timestamp, wait, then log the new timestamp
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    const [owner, repo] = core
+      .getInput('repository', { required: true })
+      .split('/')
+    const token: string = core.getInput('token', { required: true })
 
-    // Set outputs for other workflow steps to use
-    core.setOutput('time', new Date().toTimeString())
-  } catch (error) {
-    // Fail the workflow run if an error occurs
-    if (error instanceof Error) core.setFailed(error.message)
+    await hide({
+      author,
+      issueNumber,
+      owner,
+      repo,
+      token
+    })
+  } catch (err) {
+    if (err instanceof Error) core.setFailed(err.message)
   }
 }
 
