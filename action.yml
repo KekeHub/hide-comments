@@ -6,6 +6,10 @@ inputs:
   author:
     description: Author of the comment to hide
     required: false
+  classifier:
+    description: Classifier of the comment to hide.
+    required: false
+    default: outdated
   number:
     default: ${{ github.event.pull_request.number }}
     description: Number of the pull request or the issue

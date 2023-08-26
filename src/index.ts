@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import { hide } from './hide'
+import { ReportedContentClassifiers } from '@octokit/graphql-schema'
 
 /**
  * The main function for the action.
@@ -10,6 +11,12 @@ export async function run(): Promise<void> {
   try {
     const author: string | undefined =
       core.getInput('author') === '' ? undefined : core.getInput('author')
+
+    const classifier: ReportedContentClassifiers = core
+      .getInput('classifier', {
+        required: true
+      })
+      .toUpperCase() as ReportedContentClassifiers
 
     const issueNumber: number =
       core.getInput('number') === ''
@@ -23,6 +30,7 @@ export async function run(): Promise<void> {
 
     await hide({
       author,
+      classifier,
       issueNumber,
       owner,
       repo,

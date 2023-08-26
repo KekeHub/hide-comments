@@ -2,6 +2,7 @@ import { Octokit } from '@octokit/action'
 import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types'
 import { paginateRest } from '@octokit/plugin-paginate-rest'
 import * as core from '@actions/core'
+import { ReportedContentClassifiers } from '@octokit/graphql-schema'
 
 const MyOctokit = Octokit.plugin(paginateRest)
 const _octokit = new MyOctokit()
@@ -18,6 +19,13 @@ export interface HideArguments {
    * Author's login of the GitHub issue or pull request.
    */
   author?: string
+
+  /**
+   * Classifier to hide the comment as.
+   *
+   * @see {@link https://docs.github.com/en/graphql/reference/enums#reportedcontentclassifiers}
+   */
+  classifier: ReportedContentClassifiers
 
   /**
    * Number of the GitHub issue or pull request.
@@ -65,7 +73,7 @@ export type Issue = CreateLabelResponseType[number]
  * @returns {Promise<Result>} Resolves with 'done!' after hiding comments.
  */
 export async function hide(args: HideArguments): Promise<Result> {
-  const { author, issueNumber, owner, repo, token } = args
+  const { author, classifier, issueNumber, owner, repo, token } = args
 
   const octokit = new MyOctokit({ auth: token })
 
@@ -97,13 +105,14 @@ export async function hide(args: HideArguments): Promise<Result> {
        */
       return await octokit.graphql(
         `
-        mutation($subjectId: ID!) {
-          minimizeComment(input: { subjectId: $subjectId, classifier: OUTDATED }) {
+        mutation(classifier: $classifier, $subjectId: ID!) {
+          minimizeComment(input: { subjectId: $subjectId, classifier: $classifier }) {
             clientMutationId
           }
         }
       `,
         {
+          classifier,
           subjectId: target.node_id
         }
       )
