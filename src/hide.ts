@@ -95,7 +95,6 @@ export async function hide(args: HideArguments): Promise<Result> {
           }
 
           core.debug('Did not match any conditions, do not hide this comment')
-          return undefined
         })
       })
     )
@@ -112,7 +111,7 @@ export async function hide(args: HideArguments): Promise<Result> {
        */
       return await octokit.graphql(
         `
-        mutation(classifier: $classifier, $subjectId: ID!) {
+        mutation(classifier: ReportedContentClassifiers!, $subjectId: ID!) {
           minimizeComment(input: { classifier: $classifier, subjectId: $subjectId }) {
             clientMutationId
           }

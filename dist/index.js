@@ -36058,7 +36058,6 @@ async function hide(args) {
                 core.debug('Did not match author.');
             }
             core.debug('Did not match any conditions, do not hide this comment');
-            return undefined;
         });
     }))).filter(target => target !== undefined);
     core.debug(`Found ${targets.length} comments to hide.`);
@@ -36069,7 +36068,7 @@ async function hide(args) {
          * @see {@link https://docs.github.com/en/graphql/reference/mutations#minimizecomment}
          */
         return await octokit.graphql(`
-        mutation(classifier: $classifier, $subjectId: ID!) {
+        mutation(classifier: ReportedContentClassifiers!, $subjectId: ID!) {
           minimizeComment(input: { classifier: $classifier, subjectId: $subjectId }) {
             clientMutationId
           }
