@@ -1,19 +1,28 @@
-name: 'The name of your action here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: hide-comments
+description: GitHub Actions to hide comments on a PR that match specific conditions.
+author: KekeHub
 
-# Define your inputs here.
 inputs:
-  milliseconds:
-    description: 'Your input description here'
-    required: true
-    default: '1000'
-
-# Define your outputs here.
-outputs:
-  time:
-    description: 'Your output description here'
+  author:
+    description: Author of the comment to hide
+    required: false
+  classifier:
+    description: Classifier of the comment to hide.
+    required: false
+    default: outdated
+  number:
+    default: ${{ github.event.pull_request.number }}
+    description: Number of the pull request or the issue
+    required: false
+  repository:
+    description: GitHub repository containing the issue or pull request.
+    default: ${{ github.repository }}
+    required: false
+  token:
+    description: Credential to access to the repo to post the comment
+    default: ${{ github.token }}
+    required: false
 
 runs:
-  using: node16
+  using: node20
   main: dist/index.js
