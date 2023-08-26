@@ -36068,7 +36068,7 @@ async function hide(args) {
          * @see {@link https://docs.github.com/en/graphql/reference/mutations#minimizecomment}
          */
         return await octokit.graphql(`
-        mutation(classifier: ReportedContentClassifiers!, $subjectId: ID!) {
+        mutation($classifier: ReportedContentClassifiers!, $subjectId: ID!) {
           minimizeComment(input: { classifier: $classifier, subjectId: $subjectId }) {
             clientMutationId
           }
