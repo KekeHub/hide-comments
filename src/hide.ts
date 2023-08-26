@@ -81,7 +81,8 @@ export async function hide(args: HideArguments): Promise<Result> {
         return await core.group(`Comment #${comment.id}`, async () => {
           if (author) {
             core.debug(`Author: ${comment.user?.login}, Target: ${author}`)
-            return comment.user && comment.user.login === author
+            if (comment.user && comment.user.login === author) return true
+            core.debug('Did not match author.')
           }
 
           core.debug('Did not match any conditions, ignore this comment.')
