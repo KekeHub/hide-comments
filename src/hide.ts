@@ -106,7 +106,7 @@ export async function hide(args: HideArguments): Promise<Result> {
       return await octokit.graphql(
         `
         mutation(classifier: $classifier, $subjectId: ID!) {
-          minimizeComment(input: { subjectId: $subjectId, classifier: $classifier }) {
+          minimizeComment(input: { classifier: $classifier, subjectId: $subjectId }) {
             clientMutationId
           }
         }
