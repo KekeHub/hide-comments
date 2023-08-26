@@ -1,4 +1,5 @@
 import { Octokit } from '@octokit/action'
+// eslint-disable-next-line import/no-unresolved
 import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types'
 import { paginateRest } from '@octokit/plugin-paginate-rest'
 import * as core from '@actions/core'
@@ -83,16 +84,22 @@ export async function hide(args: HideArguments): Promise<Result> {
     repo
   })
 
-  const targets = comments.filter(comment => {
-    if (author) {
-      core.debug(`Author: ${comment.user?.login}, Target: ${author}`)
-      if (comment.user && comment.user.login === author) return true
-      core.debug('Did not match author.')
-    }
+  const targets = (
+    await Promise.all(
+      comments.map(async comment => {
+        return await core.group(`Comment ID: ${comment.id}`, async () => {
+          if (author) {
+            core.debug(`Author: ${comment.user?.login}, Target: ${author}`)
+            if (comment.user && comment.user.login === author) return comment
+            core.debug('Did not match author.')
+          }
 
-    core.debug('Did not match any conditions, ignore this comment.')
-    return false
-  })
+          core.debug('Did not match any conditions, do not hide this comment')
+          return undefined
+        })
+      })
+    )
+  ).filter(target => target !== undefined) as Issue[]
 
   core.debug(`Found ${targets.length} comments to hide.`)
 
