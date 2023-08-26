@@ -21,6 +21,7 @@ This action extract the number from an issue or a pull request which has trigger
 | Name | Description | Default |
 | --- | --- | --- |
 | `author` | The author of comments to hide. | - |
+| `classifier` | Classifier of comments to hide. Only `abuse`, `duplicated`, `off_topic`,   `outdated`, `resolved`, `spam` are allowed. | `outdated` |
 | `number` | Number of issue or pull request to hide comments. | `{{ github.event.issue.number }}` or `${{ github.event.pull_request.number }}` |
 | `repository` | Repository name. | `${{ github.repository }}` |
 | `token` | GitHub token. | `${{ github.token }}` |
