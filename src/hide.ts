@@ -75,25 +75,16 @@ export async function hide(args: HideArguments): Promise<Result> {
     repo
   })
 
-  const targets = (
-    await Promise.all(
-      comments.map(async comment => {
-        return await core.group(
-          `Comment #${comment.id}`,
-          async (): Promise<boolean> => {
-            if (author) {
-              core.debug(`Author: ${comment.user?.login}, Target: ${author}`)
-              if (comment.user?.login === author) return true
-              core.debug('Did not match author.')
-            }
+  const targets = comments.filter(comment => {
+    if (author) {
+      core.debug(`Author: ${comment.user?.login}, Target: ${author}`)
+      if (comment.user && comment.user.login === author) return true
+      core.debug('Did not match author.')
+    }
 
-            core.debug('Did not match any conditions, ignore this comment.')
-            return false
-          }
-        )
-      })
-    )
-  ).filter(Boolean)
+    core.debug('Did not match any conditions, ignore this comment.')
+    return false
+  })
 
   core.debug(`Found ${targets.length} comments to hide.`)
 
